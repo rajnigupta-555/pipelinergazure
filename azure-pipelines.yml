@@ -34,6 +34,7 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     backendServiceArm: 'terraform-manual-conn-new'
+    environmentServiceNameAzureRM: 'terraform-manual-conn-new'
   env:
     ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
     ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
@@ -45,6 +46,7 @@ steps:
     provider: 'azurerm'
     command: 'apply'
     backendServiceArm: 'terraform-manual-conn-new'
+    environmentServiceNameAzureRM: 'terraform-manual-conn-new'
   env:
     ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
     ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
