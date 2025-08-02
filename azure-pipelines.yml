@@ -21,7 +21,7 @@ steps:
     command: 'init'
     backendAzureRmStorageAccountName: 'teststaccountdhondhu'
     backendAzureRmContainerName: 'testcontainer'
-    backendAzureRmKey: 'rg-/terraform.tfstate'
+    backendAzureRmKey: 'terraform.tfstate'
   env:
     ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
     ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
