@@ -21,3 +21,8 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
+
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
