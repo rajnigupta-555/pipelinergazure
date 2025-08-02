@@ -1,4 +1,8 @@
 pool: agent-pool-devops
 trigger: none
 steps: 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Write-Host "Hello World"'
 
