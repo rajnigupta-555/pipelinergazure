@@ -19,6 +19,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
+    backendServiceArm: 'terraform-manual-conn-new'
     backendAzureRmStorageAccountName: 'teststaccountdhondhu'
     backendAzureRmContainerName: 'testcontainer'
     backendAzureRmKey: 'terraform.tfstate'
