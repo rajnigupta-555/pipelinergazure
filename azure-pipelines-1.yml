@@ -1,65 +1,94 @@
-pool: agent-pool-devops
 trigger: none
 
-# 👇 Link your variable group if you're using one
+parameters:
+  - name: terraformAction
+    displayName: 'Select Terraform Action'
+    type: string
+    default: 'apply'
+    values:
+      - init
+      - validate
+      - plan
+      - apply
+
+  - name: runSetup
+    displayName: 'Run Setup Job?'
+    type: boolean
+    default: true
+
 variables:
-  - group: TerraformSecrets  # Optional if variables are added directly in pipeline UI
+  - group: TerraformSecrets
 
-steps:
-- task: PowerShell@2
-  displayName: 'Print Hello World'
-  inputs:
-    targetType: 'inline'
-    script: 'Write-Host "Hello World"'
+jobs:
+- job: Setup
+  displayName: 'Setup Environment'
+  condition: eq('${{ parameters.runSetup }}', true)
+  pool:
+    name: agent-pool-devops
+  steps:
+    - task: PowerShell@2
+      displayName: 'Print Hello World'
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Hello World"'
 
-- task: TerraformInstaller@1
-  displayName: 'Install Terraform CLI'
-  inputs:
-    terraformVersion: 'latest'
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform CLI'
+      inputs:
+        terraformVersion: 'latest'
 
-- task: TerraformTask@5
-  displayName: 'Terraform Init'
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    backendServiceArm: 'terraform-manual-conn-new'
-    backendAzureRmStorageAccountName: 'teststaccountdhondhu'
-    backendAzureRmContainerName: 'testcontainer'
-    backendAzureRmKey: 'terraform.tfstate'
-  env:
-    ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
-    ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
-    ARM_TENANT_ID: '$(ARM_TENANT_ID)'
-    ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
+- job: TerraformJob
+  displayName: 'Run Selected Terraform Action'
+  pool:
+    name: agent-pool-devops
+  steps:
+    - ${{ if eq(parameters.terraformAction, 'init') }}:
+      - task: TerraformTask@5
+        displayName: 'Terraform Init'
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          backendServiceArm: 'terraform-manual-conn-new'
+          backendAzureRmStorageAccountName: 'teststaccountdhondhu'
+          backendAzureRmContainerName: 'testcontainer'
+          backendAzureRmKey: 'terraform.tfstate'
+        env:
+          ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
+          ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
+          ARM_TENANT_ID: '$(ARM_TENANT_ID)'
+          ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
-- task: TerraformTask@5
-  displayName: 'Terraform validate'
-  inputs:
-    provider: 'azurerm'
-    command: 'validate'
+    - ${{ if eq(parameters.terraformAction, 'validate') }}:
+      - task: TerraformTask@5
+        displayName: 'Terraform Validate'
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
 
-- task: TerraformTask@5
-  displayName: 'Terraform Plan'
-  inputs:
-    provider: 'azurerm'
-    command: 'plan'
-    backendServiceArm: 'terraform-manual-conn-new'
-    environmentServiceNameAzureRM: 'terraform-manual-conn-new'
-  env:
-    ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
-    ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
-    ARM_TENANT_ID: '$(ARM_TENANT_ID)'
-    ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
+    - ${{ if eq(parameters.terraformAction, 'plan') }}:
+      - task: TerraformTask@5
+        displayName: 'Terraform Plan'
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          backendServiceArm: 'terraform-manual-conn-new'
+          environmentServiceNameAzureRM: 'terraform-manual-conn-new'
+        env:
+          ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
+          ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
+          ARM_TENANT_ID: '$(ARM_TENANT_ID)'
+          ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
-- task: TerraformTask@5
-  displayName: 'Terraform Apply'
-  inputs:
-    provider: 'azurerm'
-    command: 'apply'
-    backendServiceArm: 'terraform-manual-conn-new'
-    environmentServiceNameAzureRM: 'terraform-manual-conn-new'
-  env:
-    ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
-    ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
-    ARM_TENANT_ID: '$(ARM_TENANT_ID)'
-    ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
+    - ${{ if eq(parameters.terraformAction, 'apply') }}:
+      - task: TerraformTask@5
+        displayName: 'Terraform Apply'
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          backendServiceArm: 'terraform-manual-conn-new'
+          environmentServiceNameAzureRM: 'terraform-manual-conn-new'
+        env:
+          ARM_CLIENT_ID: '$(ARM_CLIENT_ID)'
+          ARM_CLIENT_SECRET: '$(ARM_CLIENT_SECRET)'
+          ARM_TENANT_ID: '$(ARM_TENANT_ID)'
+          ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
