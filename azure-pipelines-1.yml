@@ -33,7 +33,7 @@ steps:
     ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
 - task: TerraformTask@5
-  displayName: 'Terraform Init'
+  displayName: 'Terraform validate'
   inputs:
     provider: 'azurerm'
     command: 'validate'
