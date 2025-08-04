@@ -1,20 +1,30 @@
 trigger: none
 
 parameters:
-  - name: terraformAction
-    displayName: 'Select Terraform Action'
-    type: string
-    default: 'apply'
-    values:
-      - init
-      - validate
-      - plan
-      - apply
-
   - name: runSetup
     displayName: 'Run Setup Job?'
     type: boolean
     default: true
+
+  - name: runInit
+    displayName: 'Run Terraform Init?'
+    type: boolean
+    default: false
+
+  - name: runValidate
+    displayName: 'Run Terraform Validate?'
+    type: boolean
+    default: false
+
+  - name: runPlan
+    displayName: 'Run Terraform Plan?'
+    type: boolean
+    default: false
+
+  - name: runApply
+    displayName: 'Run Terraform Apply?'
+    type: boolean
+    default: false
 
 variables:
   - group: TerraformSecrets
@@ -38,11 +48,11 @@ jobs:
         terraformVersion: 'latest'
 
 - job: TerraformJob
-  displayName: 'Run Selected Terraform Action'
+  displayName: 'Run Selected Terraform Actions'
   pool:
     name: agent-pool-devops
   steps:
-    - ${{ if eq(parameters.terraformAction, 'init') }}:
+    - ${{ if eq(parameters.runInit, true) }}:
       - task: TerraformTask@5
         displayName: 'Terraform Init'
         inputs:
@@ -58,14 +68,14 @@ jobs:
           ARM_TENANT_ID: '$(ARM_TENANT_ID)'
           ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
-    - ${{ if eq(parameters.terraformAction, 'validate') }}:
+    - ${{ if eq(parameters.runValidate, true) }}:
       - task: TerraformTask@5
         displayName: 'Terraform Validate'
         inputs:
           provider: 'azurerm'
           command: 'validate'
 
-    - ${{ if eq(parameters.terraformAction, 'plan') }}:
+    - ${{ if eq(parameters.runPlan, true) }}:
       - task: TerraformTask@5
         displayName: 'Terraform Plan'
         inputs:
@@ -79,7 +89,7 @@ jobs:
           ARM_TENANT_ID: '$(ARM_TENANT_ID)'
           ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
-    - ${{ if eq(parameters.terraformAction, 'apply') }}:
+    - ${{ if eq(parameters.runApply, true) }}:
       - task: TerraformTask@5
         displayName: 'Terraform Apply'
         inputs:
