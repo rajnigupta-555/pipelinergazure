@@ -7,15 +7,18 @@ variables:
 
 steps:
 - task: PowerShell@2
+  displayName: 'Print Hello World'
   inputs:
     targetType: 'inline'
     script: 'Write-Host "Hello World"'
 
 - task: TerraformInstaller@1
+  displayName: 'Install Terraform CLI'
   inputs:
     terraformVersion: 'latest'
 
 - task: TerraformTask@5
+  displayName: 'Terraform Init'
   inputs:
     provider: 'azurerm'
     command: 'init'
@@ -30,6 +33,7 @@ steps:
     ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
 - task: TerraformTask@5
+  displayName: 'Terraform Plan'
   inputs:
     provider: 'azurerm'
     command: 'plan'
@@ -42,6 +46,7 @@ steps:
     ARM_SUBSCRIPTION_ID: '$(ARM_SUBSCRIPTION_ID)'
 
 - task: TerraformTask@5
+  displayName: 'Terraform Apply'
   inputs:
     provider: 'azurerm'
     command: 'apply'
